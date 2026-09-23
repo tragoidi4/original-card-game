@@ -167,8 +167,28 @@ function renderDeckEditor(){
   }
   cardNames.forEach(n=>candidates.appendChild(deckEditorCard(n)));
 }
+function makeDeckCode(deck){
+  const counts=new Map();
+  (deck||[]).forEach(name=>{const i=cardNames.indexOf(name);if(i>=0)counts.set(i,(counts.get(i)||0)+1)});
+  return "D1-"+[...counts.entries()].sort((a,b)=>a[0]-b[0]).map(([i,n])=>i.toString(36)+"."+n.toString(36)).join("-");
+}
+function readDeckCode(code){
+  const s=String(code||"").trim().toUpperCase();
+  if(!s.startsWith("D1-"))throw new Error("デッキコードの形式が正しくありません");
+  const parts=s.slice(3).split("-").filter(Boolean),deck=[];
+  for(const part of parts){
+    const q=part.split(".");
+    if(q.length!==2)throw new Error("デッキコードの形式が正しくありません");
+    const i=parseInt(q[0],36),n=parseInt(q[1],36);
+    if(!Number.isInteger(i)||!Number.isInteger(n)||i<0||i>=cardNames.length||n<1)throw new Error("デッキコードに不正なカードがあります");
+    for(let k=0;k<n;k++)deck.push(cardNames[i]);
+  }
+  return deck;
+}
 function setup(){
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
+  document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
+  document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;renderDeckEditor();log("デッキコードからデッキを複製しました")}catch(e){alert(e.message)}};
   document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();const b=document.querySelector("#deckSave");b.textContent="保存しました";b.classList.add("saved");clearTimeout(state.deckSaveTimer);state.deckSaveTimer=setTimeout(()=>{b.textContent="デッキを保存";b.classList.remove("saved")},1200);log("デッキを保存しました")};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
