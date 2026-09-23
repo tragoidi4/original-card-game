@@ -23,6 +23,9 @@ function render(){
     zone(p,"field",x.field);
     zone(p,"discard",x.discard.slice(-1));
     zone(p,"facedown",x.facedown);
+    const deck=document.querySelector("#p"+p+"-deck");
+    deck.onclick=()=>{state.selected={p,z:"deck",id:"deck"};render()};
+    deck.classList.toggle("horizontal",!!x.deckHorizontal);
     zone(p,"energy",x.energy);
     zone(p,"monsters",x.monsters);
     const h=document.querySelector("#p"+p+"-hand");h.innerHTML="";
@@ -97,7 +100,7 @@ function selection(){
     add("カウンター +1",()=>{c.counters++;render()});
     add("カウンター -1",()=>{if(c.counters===0)return log("カウンター減少をキャンセル");c.counters--;render()});
   }
-  for(const[z,label]of[["hand","手札へ"],["energy","エネルギーへ"],["monsters","モンスターへ"],["field","フィールドへ"],["facedown","裏向きエリアへ"],["discard","捨て札へ"]])
+  for(const[z,label]of[["hand","手札へ"],["energy","エネルギーへ"],["monsters","モンスターへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]])
     if(z!==s.z)add(label,()=>move(z));
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
