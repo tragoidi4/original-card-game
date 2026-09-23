@@ -13,7 +13,7 @@ function newPlayer(name,p){
   const pool=shuffle([...cardNames]).slice(0,50);
   return{name,life:4000,deckList:pool.slice(),hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
 }
-function log(s){const e=document.querySelector("#log"),d=new Date().toLocaleTimeString("ja-JP");e.insertAdjacentHTML("beforeend",'<div>['+d+'] '+esc(s)+"</div>");e.scrollTop=e.scrollHeight}
+function log(s){const e=document.querySelector("#log"),d=new Date().toLocaleTimeString("ja-JP"),html='<div>['+d+'] '+esc(s)+"</div>";e.insertAdjacentHTML("beforeend",html);e.scrollTop=e.scrollHeight;const v=document.querySelector("#deckViewerLog");if(v){v.insertAdjacentHTML("beforeend",html);v.scrollTop=v.scrollHeight}}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 function render(){
@@ -127,7 +127,7 @@ function selection(){
   }
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
-function openDeckViewer(){state.deckInspectId=null;renderDeckViewer();document.querySelector("#deckViewer").hidden=false}
+function openDeckViewer(){state.deckInspectId=null;renderDeckViewer();const v=document.querySelector("#deckViewerLog"),l=document.querySelector("#log");if(v&&l){v.innerHTML=l.innerHTML;v.scrollTop=v.scrollHeight}document.querySelector("#deckViewer").hidden=false}
 function closeDeckViewer(){state.deckInspectId=null;document.querySelector("#deckViewer").hidden=true}
 function renderDeckViewer(){
   const list=document.querySelector("#deckViewerList"),actions=document.querySelector("#deckViewerActions"),preview=document.querySelector("#deckViewerPreview");
