@@ -3,7 +3,7 @@ const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFold
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
 const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
-const state={turnPlayer:1,selected:null,players:{},savedDeck:[],deckSaveTimer:null,deckLoadTimer:null};
+const state={turnPlayer:1,selected:null,deckInspectId:null,players:{},savedDeck:[],deckSaveTimer:null,deckLoadTimer:null};
 let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
@@ -75,6 +75,7 @@ function selection(){
     pr.textContent="デッキ";
     op.innerHTML="";
     if(s.p!==1){op.textContent="相手のデッキは確認のみ";return}
+    add("山札を確認",()=>openDeckViewer());
     add("1枚引く",()=>drawCards(1));
     add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
     add("デッキをシャッフル",()=>{shuffle(state.players[1].deck);render();log("デッキをシャッフルしました")});
@@ -126,6 +127,34 @@ function selection(){
   }
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
+function openDeckViewer(){state.deckInspectId=null;renderDeckViewer();document.querySelector("#deckViewer").hidden=false}
+function closeDeckViewer(){state.deckInspectId=null;document.querySelector("#deckViewer").hidden=true}
+function renderDeckViewer(){
+  const list=document.querySelector("#deckViewerList"),actions=document.querySelector("#deckViewerActions"),preview=document.querySelector("#deckViewerPreview");
+  if(!list||!actions||!preview)return;
+  const x=state.players[1],deck=x.deck||[];
+  list.innerHTML="";actions.innerHTML="";preview.innerHTML="";
+  if(!deck.length){list.innerHTML='<div class="deck-viewer-empty">山札がありません</div>';preview.textContent="カードを選択";return}
+  deck.forEach(c=>{
+    const e=document.createElement("div");e.className="deck-viewer-card"+(state.deckInspectId===c.id?" selected":"");
+    const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(c.name))};e.appendChild(img);
+    e.onclick=()=>{state.deckInspectId=c.id;renderDeckViewer()};list.appendChild(e);
+  });
+  const c=deck.find(v=>v.id===state.deckInspectId);
+  if(!c){preview.textContent="カードを選択";return}
+  const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name))};preview.appendChild(img);
+  const name=document.createElement("div");name.className="deck-viewer-name";name.textContent=c.name;preview.appendChild(name);
+  for(const[z,label]of[["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]]){
+    const b=document.createElement("button");b.textContent=label;b.onclick=()=>moveInspectedDeckCard(z);actions.appendChild(b);
+  }
+}
+function moveInspectedDeckCard(dest){
+  const x=state.players[1],i=x.deck.findIndex(c=>c.id===state.deckInspectId);if(i<0)return;
+  if(MAX[dest]!==undefined&&x[dest].length>=MAX[dest])return log(dest+" の上限のため移動をキャンセル");
+  const c=x.deck.splice(i,1)[0];c.faceUp=dest==="facedown"?false:true;x[dest].push(c);
+  log("山札から "+c.name+" を "+({"hand":"手札","monsters":"モンスター","energy":"エネルギー","field":"フィールド","facedown":"罠","discard":"捨て札"}[dest])+" へ移動しました");
+  state.deckInspectId=null;render();renderDeckViewer();
+}
 function move(dest){
   const s=state.selected,x=state.players[1],src=x[s.z],i=src.findIndex(c=>c.id===s.id);if(i<0)return;
   if(MAX[dest]!==undefined&&x[dest].length>=MAX[dest])return log(dest+" の上限のため移動をキャンセル");
@@ -210,7 +239,7 @@ function readDeckCode(code){
   return deck;
 }
 function setup(){
-  document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
+  document.querySelector("#deckViewerClose").onclick=closeDeckViewer;\n  document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
   document.querySelector("#deckCardSearch").oninput=()=>renderDeckEditor();
   document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
   document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;renderDeckEditor();
