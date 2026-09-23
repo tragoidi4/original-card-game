@@ -3,7 +3,7 @@ const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFold
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
 const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
-const state={turnPlayer:1,selected:null,players:{}};
+const state={turnPlayer:1,selected:null,players:{},savedDeck:[]};
 let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
@@ -163,7 +163,8 @@ function renderDeckEditor(){
   cardNames.forEach(n=>candidates.appendChild(deckEditorCard(n)));
 }
 function setup(){
-  document.querySelector("#deckEdit").onclick=()=>{document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
+  document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
+  document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();log("デッキを保存しました")};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
   document.querySelectorAll("[data-first]").forEach(b=>b.onclick=()=>{
@@ -173,12 +174,12 @@ function setup(){
   document.querySelector("#rename").onclick=()=>{
     const n=document.querySelector("#name").value.trim();if(n){state.players[1].name=n.slice(0,16);render();log("名前を変更しました")}
   };
-  document.querySelector("#reset").onclick=()=>{if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;const deckList=(state.players[1].deckList||[]).slice();const p=newPlayer(n,"p1");const pool=deckList.length?deckList:p.deckList;p.deckList=pool.slice();p.hand=pool.slice(0,7).map((name,i)=>newCard(name,"p1h"+i));p.deck=pool.slice(7).map((name,i)=>newCard(name,"p1d"+i));state.players[1]=p;state.selected=null;render();log("自分の盤面をリセットし、現在のデッキを反映しました")}};
+  document.querySelector("#reset").onclick=()=>{if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;const deckList=(state.savedDeck||[]).slice();const p=newPlayer(n,"p1");const pool=deckList.length?deckList:p.deckList;p.deckList=pool.slice();p.hand=pool.slice(0,7).map((name,i)=>newCard(name,"p1h"+i));p.deck=pool.slice(7).map((name,i)=>newCard(name,"p1d"+i));state.players[1]=p;state.selected=null;render();log("自分の盤面をリセットし、現在のデッキを反映しました")}};
 }
 async function start(){
   const r=await fetch(CARD_NAMES_URL);
   cardNames=(await r.text()).split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  state.players={1:newPlayer("プレイヤー1","p1"),2:newPlayer("プレイヤー2","p2")};
+  state.players={1:newPlayer("プレイヤー1","p1"),2:newPlayer("プレイヤー2","p2")};state.savedDeck=state.players[1].deckList.slice();
   setup();render();log("カード画像を読み込みました（"+cardNames.length+"種類）");
 }
 start().catch(e=>{console.error(e);document.querySelector("#log").textContent="カード一覧の読み込みに失敗しました。";});
