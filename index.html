@@ -26,8 +26,9 @@
 <div class="row hand"><label>手札</label><div id="p1-hand" class="cards"></div></div>
 </div>
 </section>
-<aside class="side right"><div class="title">プレイヤー設定</div><input id="name" maxlength="16" value="プレイヤー1"><button id="rename">名前を変更</button><div class="title">先攻・後攻</div><button data-first="random">ランダム</button><button data-first="self">自分が先攻</button><button data-first="opponent">相手が先攻</button><button id="reset">自分の盤面をリセット</button><div class="title logtitle">ログ</div><div id="log" class="log"></div></aside>
+<aside class="side right"><div class="title">プレイヤー設定</div><input id="name" maxlength="16" value="プレイヤー1"><button id="rename">名前を変更</button><div class="title">先攻・後攻</div><button data-first="random">ランダム</button><button data-first="self">自分が先攻</button><button data-first="opponent">相手が先攻</button><button id="reset">自分の盤面をリセット</button><button id="deckEdit">デッキ編集</button><div class="title logtitle">ログ</div><div id="log" class="log"></div></aside>
 </section>
+<section id="deckEditor" class="deck-editor" hidden><header><h2>デッキ編集</h2><button id="deckEditBack">対戦画面へ戻る</button></header><div class="deck-editor-body"><div class="deck-editor-placeholder">デッキ編集画面</div></div></section>
 </main>
 <script src="js/game.js?v=hand-actions2"></script>
 </body>
