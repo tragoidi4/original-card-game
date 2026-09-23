@@ -46,7 +46,7 @@ function cardEl(p,z,c,visible){
     e.classList.add("back");
   }else{
     const img=document.createElement("img");
-    img.src=(z==="energy"?CROPPED_CARD_IMAGE_BASE:CARD_IMAGE_BASE)+encodeURIComponent(c.name)+".png"+(z==="energy"?"?energyv=3":"");img.alt=c.name;img.loading="lazy";
+    img.src=(z==="energy"?CROPPED_CARD_IMAGE_BASE:CARD_IMAGE_BASE)+encodeURIComponent(c.name)+".png"+(z==="energy"?"?energyv=3":"");img.alt=c.name;img.loading="lazy";if(c.tapped)img.style.transform="rotate(-15deg)";
     img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};
     e.appendChild(img);
     const a=c.modification+c.recovery-c.damage;
