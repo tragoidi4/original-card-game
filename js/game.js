@@ -42,7 +42,7 @@ function cardEl(p,z,c,visible){
     e.classList.add("back");
   }else{
     const img=document.createElement("img");
-    img.src=imageUrl(c.name,z==="monsters"||z==="energy");img.alt=c.name;img.loading="lazy";
+    img.src=imageUrl(c.name);img.alt=c.name;img.loading="lazy";
     img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};
     e.appendChild(img);
     const a=c.modification+c.recovery-c.damage;
@@ -63,7 +63,7 @@ function selection(){
   const s=state.selected,c=find(s.p,s.z,s.id);
   if(!c){state.selected=null;return render()}
   pr.innerHTML="";
-  const img=document.createElement("img");img.src=imageUrl(c.name,s.z==="monsters"||s.z==="energy");img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
+  const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
   op.innerHTML="";
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
   add("裏向きにする",()=>{c.faceUp=false;state.selected=null;render()});
