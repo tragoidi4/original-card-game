@@ -223,7 +223,7 @@ function setup(){
     const q=b.dataset.first;state.turnPlayer=q==="self"?1:q==="opponent"?2:(Math.random()<.5?1:2);
     render();log("先攻: "+state.players[state.turnPlayer].name)
   });
-  document.querySelector("#p1-life").onclick=()=>{const x=state.players[1];const n=Number(prompt("変更後のライフを入力してください",String(x.life)));if(Number.isInteger(n)&&n>=0){x.life=n;render();log("自分のライフを "+n+" に変更しました")}else if(!Number.isNaN(n)){log("ライフの変更をキャンセルしました")}};
+  document.querySelector("#p1-life").onclick=()=>{const x=state.players[1];const input=prompt("ライフを入力してください\n例: 3000 → 3000に変更 / +500 → 500増加 / -500 → 500減少",String(x.life));if(input===null)return;const raw=input.trim();if(!raw)return;const deltaMode=/^[+-]/.test(raw);const n=Number(raw);if(!Number.isInteger(n)){log("ライフの変更をキャンセルしました");return}const next=deltaMode?x.life+n:n;if(next<0){log("ライフは0未満にできません");return}x.life=next;render();log(deltaMode?"自分のライフを "+(n>0?"+":"")+n+" して "+next+" に変更しました":"自分のライフを "+next+" に変更しました")};
   document.querySelector("#rename").onclick=()=>{
     const n=document.querySelector("#name").value.trim();if(n){state.players[1].name=n.slice(0,16);render();log("名前を変更しました")}
   };
