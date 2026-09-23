@@ -3,7 +3,7 @@ const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFold
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
 const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
-const state={turnPlayer:1,selected:null,players:{},savedDeck:[]};
+const state={turnPlayer:1,selected:null,players:{},savedDeck:[],deckSaveTimer:null};
 let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
@@ -25,7 +25,11 @@ function render(){
     zone(p,"discard",x.discard.slice(-1));
     zone(p,"facedown",x.facedown);
     const deck=document.querySelector("#p"+p+"-deck");
-    deck.onclick=()=>{state.selected={p,z:"deck",id:"deck"};render()};
+    deck.innerHTML="";
+    deck.onclick=null;
+    if(x.deck.length){
+      deck.onclick=()=>{state.selected={p,z:"deck",id:"deck"};render()};
+    }
     deck.classList.toggle("horizontal",!!x.deckHorizontal);
     zone(p,"energy",x.energy);
     zone(p,"monsters",x.monsters);
@@ -164,7 +168,7 @@ function renderDeckEditor(){
 }
 function setup(){
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
-  document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();log("デッキを保存しました")};
+  document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();const b=document.querySelector("#deckSave");b.textContent="保存しました";b.classList.add("saved");clearTimeout(state.deckSaveTimer);state.deckSaveTimer=setTimeout(()=>{b.textContent="デッキを保存";b.classList.remove("saved")},1200);log("デッキを保存しました")};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
   document.querySelectorAll("[data-first]").forEach(b=>b.onclick=()=>{
