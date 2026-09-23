@@ -90,7 +90,7 @@ function selection(){
   }else{
     add("裏向きにする",()=>{c.faceUp=false;state.selected=null;render()});
   }
-  if(s.z==="monsters"||s.z==="energy")add("タップ / アンタップ",()=>{c.tapped=!c.tapped;render()});
+  if(s.z==="monsters"||s.z==="energy"){add("タップ / アンタップ",()=>{c.tapped=!c.tapped;state.selected={p:s.p,z:s.z,id:s.id};render()});}
   if(s.z==="monsters"){
     add("100ダメージ",()=>{c.damage+=100;render()});
     add("100回復",()=>{c.recovery=Math.min(c.damage,c.recovery+100);render()});
