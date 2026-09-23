@@ -79,11 +79,16 @@ function selection(){
   const c=find(s.p,s.z,s.id);
   if(!c){state.selected=null;return render()}
   pr.innerHTML="";
-  if(c.faceUp!==false){
-    const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
+  if(c.faceUp!==false || (s.p===1 && s.z==="facedown")){
+    const img=document.createElement("img");
+    img.src=imageUrl(c.name);img.alt=c.name;
+    img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};
+    pr.appendChild(img);
+    if(c.faceUp===false && s.z==="facedown"){
+      const name=document.createElement("div");name.textContent=c.name;name.style.marginTop="4px";pr.appendChild(name);
+    }
   }else{
-    const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
-    const name=document.createElement("div");name.textContent=c.name;name.style.marginTop="4px";pr.appendChild(name);
+    pr.textContent="裏向きのカード";
   }
   op.innerHTML="";
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
