@@ -1,6 +1,7 @@
 const MAX={hand:9,monsters:7,energy:18,field:1,facedown:3};
 const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/all_card_names.txt";
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
+const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
 const state={turnPlayer:1,selected:null,players:{}};
 let cardNames=[];
@@ -45,7 +46,7 @@ function cardEl(p,z,c,visible){
     e.classList.add("back");
   }else{
     const img=document.createElement("img");
-    img.src=imageUrl(c.name);img.alt=c.name;img.loading="lazy";
+    img.src=(z==="energy"?CROPPED_CARD_IMAGE_BASE:CARD_IMAGE_BASE)+encodeURIComponent(c.name)+".png";img.alt=c.name;img.loading="lazy";
     img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};
     e.appendChild(img);
     const a=c.modification+c.recovery-c.damage;
