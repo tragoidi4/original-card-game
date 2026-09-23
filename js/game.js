@@ -146,6 +146,8 @@ function endTurn(){
   render();log(x2.name+" のターン開始");
 }
 function setup(){
+  document.querySelector("#deckEdit").onclick=()=>{document.querySelector("#deckEditor").hidden=false};
+  document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
   document.querySelectorAll("[data-first]").forEach(b=>b.onclick=()=>{
     const q=b.dataset.first;state.turnPlayer=q==="self"?1:q==="opponent"?2:(Math.random()<.5?1:2);
