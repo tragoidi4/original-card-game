@@ -3,7 +3,7 @@ const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFold
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
 const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
-const state={turnPlayer:1,selected:null,players:{},savedDeck:[],deckSaveTimer:null};
+const state={turnPlayer:1,selected:null,players:{},savedDeck:[],deckSaveTimer:null,deckLoadTimer:null};
 let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
@@ -170,10 +170,32 @@ function renderDeckEditor(){
 function makeDeckCode(deck){
   const counts=new Map();
   (deck||[]).forEach(name=>{const i=cardNames.indexOf(name);if(i>=0)counts.set(i,(counts.get(i)||0)+1)});
+  const bytes=[];
+  [...counts.entries()].sort((a,b)=>a[0]-b[0]).forEach(([i,n])=>{
+    bytes.push((i>>8)&3,i&255,n&255);
+  });
+  let bin="";bytes.forEach(b=>bin+=String.fromCharCode(b));
+  return "D2-"+btoa(bin).replace(/\\+/g,"-").replace(/\\//g,"_").replace(/=+$/,"");
+}
+function makeLegacyDeckCode(deck){
+  const counts=new Map();
+  (deck||[]).forEach(name=>{const i=cardNames.indexOf(name);if(i>=0)counts.set(i,(counts.get(i)||0)+1)});
   return "D1-"+[...counts.entries()].sort((a,b)=>a[0]-b[0]).map(([i,n])=>i.toString(36)+"."+n.toString(36)).join("-");
 }
 function readDeckCode(code){
   const s=String(code||"").trim().toUpperCase();
+  if(s.startsWith("D2-")){
+    let b64=s.slice(3).replace(/-/g,"+").replace(/_/g,"/");
+    b64+="=".repeat((4-b64.length%4)%4);
+    const bin=atob(b64),deck=[];
+    if(bin.length%3!==0)throw new Error("デッキコードの形式が正しくありません");
+    for(let j=0;j<bin.length;j+=3){
+      const i=((bin.charCodeAt(j)&3)<<8)|bin.charCodeAt(j+1),n=bin.charCodeAt(j+2);
+      if(i<0||i>=cardNames.length||n<1)throw new Error("デッキコードに不正なカードがあります");
+      for(let k=0;k<n;k++)deck.push(cardNames[i]);
+    }
+    return deck;
+  }
   if(!s.startsWith("D1-"))throw new Error("デッキコードの形式が正しくありません");
   const parts=s.slice(3).split("-").filter(Boolean),deck=[];
   for(const part of parts){
@@ -188,7 +210,9 @@ function readDeckCode(code){
 function setup(){
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
   document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
-  document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;renderDeckEditor();log("デッキコードからデッキを複製しました")}catch(e){alert(e.message)}};
+  document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;renderDeckEditor();
+      const b=document.querySelector("#deckCodeLoad");b.textContent="複製しました";b.classList.add("loaded");clearTimeout(state.deckLoadTimer);state.deckLoadTimer=setTimeout(()=>{b.textContent="コードから複製";b.classList.remove("loaded")},1200);
+      log("デッキコードからデッキを複製しました")}catch(e){alert(e.message)}};
   document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();const b=document.querySelector("#deckSave");b.textContent="保存しました";b.classList.add("saved");clearTimeout(state.deckSaveTimer);state.deckSaveTimer=setTimeout(()=>{b.textContent="デッキを保存";b.classList.remove("saved")},1200);log("デッキを保存しました")};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
