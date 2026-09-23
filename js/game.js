@@ -54,7 +54,7 @@ function cardEl(p,z,c,visible){
 }
 function find(p,z,id){return state.players[p][z].find(c=>c.id===id);}
 function select(p,z,id){
-  const c=find(p,z,id);if(!c||c.faceUp===false)return;
+  const c=find(p,z,id);if(!c)return;
   state.selected={p,z,id};render();
 }
 function selection(){
