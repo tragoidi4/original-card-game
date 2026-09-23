@@ -17,3 +17,5 @@
 .settings-separator{height:10px;border-top:1px solid #383d45;margin:8px 0 2px}
 
 .deck-controls,.board-controls{display:block}.deck-controls .title,.board-controls .title{margin-top:4px}
+
+.right .deck-controls{margin-top:12px;padding-top:10px;border-top:2px solid #555}.right .board-controls{margin-top:12px;padding-top:10px;border-top:2px solid #555}.right .deck-controls .title,.right .board-controls .title{font-size:12px;color:#aaa;font-weight:bold;margin:0 0 4px}
