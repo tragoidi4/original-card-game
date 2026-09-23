@@ -37,6 +37,7 @@ function render(){
 }
 function zone(p,z,a){
   const e=document.querySelector("#p"+p+"-"+z);e.innerHTML="";
+  if(z==="facedown"){e.style.display="flex";e.style.flexDirection="row";e.style.flexWrap="nowrap";e.style.gap="7px";e.style.alignItems="flex-start";e.style.justifyContent="flex-start";}
   (a||[]).forEach(c=>e.appendChild(cardEl(p,z,c,p===1||c.faceUp!==false)));
 }
 function cardEl(p,z,c,visible){
