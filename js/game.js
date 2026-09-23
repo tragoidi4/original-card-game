@@ -60,7 +60,18 @@ function select(p,z,id){
 function selection(){
   const pr=document.querySelector("#preview"),op=document.querySelector("#ops");
   if(!state.selected){pr.innerHTML="カードを選択";op.textContent="カードを選択してください";return}
-  const s=state.selected,c=find(s.p,s.z,s.id);
+  const s=state.selected;
+  if(s.z==="deck"){
+    pr.textContent="デッキ";
+    op.innerHTML="";
+    if(s.p!==1){op.textContent="相手のデッキは確認のみ";return}
+    add("1枚引く",()=>drawCards(1));
+    add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
+    add("デッキをシャッフル",()=>{shuffle(state.players[1].deck);render();log("デッキをシャッフルしました")});
+    add("デッキを横向きにする",()=>{state.players[1].deckHorizontal=!state.players[1].deckHorizontal;state.selected=null;render()});
+    return;
+  }
+  const c=find(s.p,s.z,s.id);
   if(!c){state.selected=null;return render()}
   pr.innerHTML="";
   if(c.faceUp!==false){
@@ -93,7 +104,17 @@ function add(t,fn){const b=document.createElement("button");b.textContent=t;b.on
 function move(dest){
   const s=state.selected,x=state.players[1],src=x[s.z],i=src.findIndex(c=>c.id===s.id);if(i<0)return;
   if(MAX[dest]!==undefined&&x[dest].length>=MAX[dest])return log(dest+" の上限のため移動をキャンセル");
-  const c=src.splice(i,1)[0];if(dest==="facedown")c.faceUp=false;x[dest].push(c);state.selected=null;render();
+  const c=src.splice(i,1)[0];
+  if(dest==="facedown")c.faceUp=false;
+  else c.faceUp=true;
+  x[dest].push(c);state.selected=null;render();
+}
+function drawCards(n){
+  const x=state.players[1];
+  if(x.hand.length+n>MAX.hand)return log("手札の上限のためドローをキャンセル");
+  if(x.deck.length<n)return log("デッキが足りないためドローをキャンセル");
+  for(let i=0;i<n;i++)x.hand.push(x.deck.shift());
+  state.selected=null;render();
 }
 function endTurn(){
   const p=state.turnPlayer,x=state.players[p];
