@@ -150,7 +150,16 @@ function renderDeckEditor(){
   const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
   current.innerHTML="";candidates.innerHTML="";
   const deck=state.players[1].deckList||[];
-  if(!deck.length){current.innerHTML='<div class="deck-empty">デッキにカードがありません</div>'}else deck.forEach(n=>current.appendChild(deckEditorCard(n)));
+  if(!deck.length){current.innerHTML='<div class="deck-empty">デッキにカードがありません</div>'}else{
+    const counts=new Map();
+    deck.forEach(n=>counts.set(n,(counts.get(n)||0)+1));
+    counts.forEach((count,name)=>{
+      const row=document.createElement("div");
+      row.className="deck-card-count";
+      row.textContent=name+" × "+count;
+      current.appendChild(row);
+    });
+  }
   cardNames.forEach(n=>candidates.appendChild(deckEditorCard(n)));
 }
 function setup(){
