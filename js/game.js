@@ -108,11 +108,17 @@ function selection(){
     add("カウンター +1",()=>{c.counters++;render()});
     add("カウンター -1",()=>{if(c.counters===0)return log("カウンター減少をキャンセル");c.counters--;render()});
   }
-  const moveTargets=s.z==="hand"
-    ?[["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]]
-    :[["hand","手札へ"],["energy","エネルギーへ"],["monsters","モンスターへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]];
-  for(const[z,label]of moveTargets)
-    if(z!==s.z)add(label,()=>move(z));
+  if(s.z==="hand"){
+    add("手札へ",()=>move("hand"));
+    add("モンスターへ",()=>move("monsters"));
+    add("エネルギーへ",()=>move("energy"));
+    add("フィールドへ",()=>move("field"));
+    add("罠へ",()=>move("facedown"));
+    add("捨て札へ",()=>move("discard"));
+  }else{
+    for(const[z,label]of[["hand","手札へ"],["energy","エネルギーへ"],["monsters","モンスターへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]])
+      if(z!==s.z)add(label,()=>move(z));
+  }
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
 function move(dest){
