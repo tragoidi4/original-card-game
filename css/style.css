@@ -21,3 +21,5 @@
 .right .deck-controls{margin-top:0;padding-top:0;border-top:0}.right .board-controls{margin-top:0;padding-top:0;border-top:0}.right .deck-controls .title,.right .board-controls .title{font-size:12px;color:#aaa;font-weight:bold;margin:0 0 4px}
 
 .settings-divider{display:block!important;height:0!important;border:0!important;border-top:2px solid #777!important;margin:14px 0 8px!important;width:100%!important;opacity:1!important}
+
+.deck-separator,.board-separator{height:2px!important;background:#777!important;margin:12px 0 8px!important;width:100%!important;display:block!important}
