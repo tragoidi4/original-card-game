@@ -223,6 +223,7 @@ function setup(){
     const q=b.dataset.first;state.turnPlayer=q==="self"?1:q==="opponent"?2:(Math.random()<.5?1:2);
     render();log("先攻: "+state.players[state.turnPlayer].name)
   });
+  document.querySelector("#p1-life").onclick=()=>{const x=state.players[1];const n=Number(prompt("変更後のライフを入力してください",String(x.life)));if(Number.isInteger(n)&&n>=0){x.life=n;render();log("自分のライフを "+n+" に変更しました")}else if(!Number.isNaN(n)){log("ライフの変更をキャンセルしました")}};
   document.querySelector("#rename").onclick=()=>{
     const n=document.querySelector("#name").value.trim();if(n){state.players[1].name=n.slice(0,16);render();log("名前を変更しました")}
   };
