@@ -108,9 +108,10 @@ function move(dest){
   const s=state.selected,x=state.players[1],src=x[s.z],i=src.findIndex(c=>c.id===s.id);if(i<0)return;
   if(MAX[dest]!==undefined&&x[dest].length>=MAX[dest])return log(dest+" の上限のため移動をキャンセル");
   const c=src.splice(i,1)[0];
-  if(dest==="facedown")c.faceUp=false;
-  else c.faceUp=true;
-  x[dest].push(c);state.selected=null;render();
+  c.faceUp = dest==="facedown" ? false : true;
+  x[dest].push(c);
+  state.selected=null;
+  render();
 }
 function drawCards(n){
   const x=state.players[1];
