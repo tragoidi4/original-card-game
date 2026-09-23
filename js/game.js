@@ -240,6 +240,7 @@ function readDeckCode(code){
 }
 function setup(){
   document.querySelector("#deckViewerClose").onclick=closeDeckViewer;
+  document.querySelector("#inspectDeck").onclick=openDeckViewer;
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
   document.querySelector("#deckCardSearch").oninput=()=>renderDeckEditor();
   document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
