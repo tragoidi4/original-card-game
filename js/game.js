@@ -63,10 +63,18 @@ function selection(){
   const s=state.selected,c=find(s.p,s.z,s.id);
   if(!c){state.selected=null;return render()}
   pr.innerHTML="";
-  const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
+  if(c.faceUp!==false){
+    const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
+  }else{
+    pr.textContent="裏向きのカード";
+  }
   op.innerHTML="";
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
-  add("裏向きにする",()=>{c.faceUp=false;state.selected=null;render()});
+  if(c.faceUp===false){
+    add("表向きにする",()=>{c.faceUp=true;render()});
+  }else{
+    add("裏向きにする",()=>{c.faceUp=false;state.selected=null;render()});
+  }
   if(s.z==="monsters"||s.z==="energy")add("タップ / アンタップ",()=>{c.tapped=!c.tapped;render()});
   if(s.z==="monsters"){
     add("100ダメージ",()=>{c.damage+=100;render()});
