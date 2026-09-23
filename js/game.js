@@ -1,11 +1,11 @@
 const MAX={hand:9,monsters:7,energy:18,field:1,facedown:3};
 const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/all_card_names.txt";
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
-const CARD_CROPPED_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
+
 const state={turnPlayer:1,selected:null,players:{}};
 let cardNames=[];
 
-function imageUrl(name,cropped=false){const base=cropped?CARD_CROPPED_BASE:CARD_IMAGE_BASE;return base+encodeURIComponent(name)+".png";}
+function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
 function newCard(name,id){return{id,name,faceUp:true,tapped:false,counters:0,damage:0,recovery:0,modification:0};}
 function newPlayer(name,p){
