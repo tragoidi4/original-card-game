@@ -82,7 +82,8 @@ function selection(){
   if(c.faceUp!==false){
     const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
   }else{
-    pr.textContent="裏向きのカード";
+    const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name));};pr.appendChild(img);
+    const name=document.createElement("div");name.textContent=c.name;name.style.marginTop="4px";pr.appendChild(name);
   }
   op.innerHTML="";
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
