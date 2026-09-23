@@ -2,8 +2,8 @@
 .player.opponent .hand{grid-row:1;transform:translateY(-25px)}
 .player.opponent .other{grid-row:2}
 .player.opponent .row:not(.hand):not(.monsters){grid-row:3}
-.player.opponent .monsters{grid-row:4}
-.player.self .monsters{grid-row:1}
+.player.opponent .monsters{grid-row:4;margin-top:18px}
+.player.self .monsters{grid-row:1;margin-bottom:18px}
 .player.self .row:not(.hand):not(.monsters){grid-row:2}
 .player.self .other{grid-row:3}
 .player.self .hand{grid-row:4}
