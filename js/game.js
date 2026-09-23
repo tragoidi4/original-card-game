@@ -30,8 +30,8 @@ function render(){
     if(x.deck.length){
       deck.onclick=()=>{state.selected={p,z:"deck",id:"deck"};render()};
     }
+    deck.classList.toggle("back",!!x.deck.length);
     deck.classList.toggle("horizontal",!!x.deckHorizontal);
-    deck.classList.toggle("empty",!x.deck.length);
     zone(p,"energy",x.energy);
     zone(p,"monsters",x.monsters);
     const h=document.querySelector("#p"+p+"-hand");h.innerHTML="";
