@@ -35,3 +35,5 @@
 .deck-codebar button.loaded{background:#3b7d3b;border-color:#69b969;color:#fff;font-weight:700}
 
 .deck-candidates-title{display:flex;align-items:center;gap:7px}.deck-candidates-title span{flex:0 0 auto}.deck-candidates-title input{flex:1;min-width:0;height:22px;padding:2px 6px;border:1px solid #555;border-radius:4px;background:#111;color:#fff;font-size:10px}.deck-candidates-title input::placeholder{color:#777}
+
+.editable-life{cursor:pointer;text-decoration:underline dotted;color:#fff}.editable-life:hover{color:#f3c85b}
