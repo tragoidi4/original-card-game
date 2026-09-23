@@ -175,7 +175,7 @@ function makeDeckCode(deck){
     bytes.push((i>>8)&3,i&255,n&255);
   });
   let bin="";bytes.forEach(b=>bin+=String.fromCharCode(b));
-  return "D2-"+btoa(bin).replace(/\\+/g,"-").replace(/\\//g,"_").replace(/=+$/,"");
+  return "D2-"+btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 }
 function makeLegacyDeckCode(deck){
   const counts=new Map();
@@ -183,9 +183,10 @@ function makeLegacyDeckCode(deck){
   return "D1-"+[...counts.entries()].sort((a,b)=>a[0]-b[0]).map(([i,n])=>i.toString(36)+"."+n.toString(36)).join("-");
 }
 function readDeckCode(code){
-  const s=String(code||"").trim().toUpperCase();
-  if(s.startsWith("D2-")){
-    let b64=s.slice(3).replace(/-/g,"+").replace(/_/g,"/");
+  const raw=String(code||"").trim();
+  const s=raw.toUpperCase();
+  if(raw.toUpperCase().startsWith("D2-")){
+    let b64=raw.slice(3).replace(/-/g,"+").replace(/_/g,"/");
     b64+="=".repeat((4-b64.length%4)%4);
     const bin=atob(b64),deck=[];
     if(bin.length%3!==0)throw new Error("デッキコードの形式が正しくありません");
