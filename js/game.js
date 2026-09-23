@@ -11,7 +11,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function newCard(name,id){return{id,name,faceUp:true,tapped:false,counters:0,damage:0,recovery:0,modification:0};}
 function newPlayer(name,p){
   const pool=shuffle([...cardNames]).slice(0,50);
-  return{name,life:4000,hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
+  return{name,life:4000,deckList:pool.slice(),hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
 }
 function log(s){const e=document.querySelector("#log"),d=new Date().toLocaleTimeString("ja-JP");e.insertAdjacentHTML("beforeend",'<div>['+d+'] '+esc(s)+"</div>");e.scrollTop=e.scrollHeight}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -145,8 +145,16 @@ function endTurn(){
   x2.monsters.forEach(m=>m.tapped=false);x2.energy.forEach(e=>e.tapped=false);
   render();log(x2.name+" のターン開始");
 }
+function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);return e}
+function renderDeckEditor(){
+  const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
+  current.innerHTML="";candidates.innerHTML="";
+  const deck=state.players[1].deckList||[];
+  if(!deck.length){current.innerHTML='<div class="deck-empty">デッキにカードがありません</div>'}else deck.forEach(n=>current.appendChild(deckEditorCard(n)));
+  cardNames.forEach(n=>candidates.appendChild(deckEditorCard(n)));
+}
 function setup(){
-  document.querySelector("#deckEdit").onclick=()=>{document.querySelector("#deckEditor").hidden=false};
+  document.querySelector("#deckEdit").onclick=()=>{document.querySelector("#deckEditor").hidden=false;renderDeckEditor()};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
   document.querySelectorAll("[data-first]").forEach(b=>b.onclick=()=>{
