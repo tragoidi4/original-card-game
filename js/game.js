@@ -41,7 +41,7 @@ function zone(p,z,a){
 }
 function cardEl(p,z,c,visible){
   const e=document.createElement("div");
-  e.className="card zone-"+z+(c.tapped?" tapped":"")+(state.selected?.id===c.id?" selected":"");
+  e.className="card zone-"+z+(c.tapped?" tapped":"")+(state.selected?.id===c.id?" selected":""); if(c.tapped)e.style.transform="rotate(-15deg)";
   if(!visible||c.faceUp===false){
     e.classList.add("back");
   }else{
