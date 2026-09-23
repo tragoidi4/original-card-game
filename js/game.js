@@ -49,7 +49,7 @@ function cardEl(p,z,c,visible){
     if(a)e.insertAdjacentHTML("beforeend",'<span class="adjust">'+(a>0?"+":"")+a+"</span>");
     if(c.counters)e.insertAdjacentHTML("beforeend",'<span class="counter">'+c.counters+"</span>");
   }
-  if(visible)e.onclick=()=>select(p,z,c.id);
+  if(p===1)e.onclick=()=>select(p,z,c.id);
   return e;
 }
 function find(p,z,id){return state.players[p][z].find(c=>c.id===id);}
