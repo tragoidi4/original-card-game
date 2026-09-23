@@ -173,9 +173,7 @@ function setup(){
   document.querySelector("#rename").onclick=()=>{
     const n=document.querySelector("#name").value.trim();if(n){state.players[1].name=n.slice(0,16);render();log("名前を変更しました")}
   };
-  document.querySelector("#reset").onclick=()=>{
-    if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;state.players[1]=newPlayer(n,"p1");state.selected=null;render();log("自分の盤面をリセットしました")}
-  };
+  document.querySelector("#reset").onclick=()=>{if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;const deckList=(state.players[1].deckList||[]).slice();const p=newPlayer(n,"p1");const pool=deckList.length?deckList:p.deckList;p.deckList=pool.slice();p.hand=pool.slice(0,7).map((name,i)=>newCard(name,"p1h"+i));p.deck=pool.slice(7).map((name,i)=>newCard(name,"p1d"+i));state.players[1]=p;state.selected=null;render();log("自分の盤面をリセットし、現在のデッキを反映しました")}};
 }
 async function start(){
   const r=await fetch(CARD_NAMES_URL);
