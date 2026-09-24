@@ -86,7 +86,7 @@ function selection(){
   if(s.z==="deck"){
     pr.textContent="山札";
     op.innerHTML="";
-    if(s.p!==1){op.textContent="相手のデッキは確認のみ";return}
+    if(s.p!==1){op.innerHTML="";return}
     add("山札を確認",()=>openDeckViewer());
     add("1枚引く",()=>drawCards(1));
     add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
