@@ -92,6 +92,7 @@ function selection(){
     pr.textContent="山札";
     op.innerHTML="";
     if(s.p!==1){op.innerHTML="";return}
+    add("山札を確認",()=>openDeckViewer());
     add("1枚引く",()=>drawCards(1));
     add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
     add("山札をシャッフル",()=>{shuffle(state.players[1].deck);state.selected=null;render();log("山札をシャッフルしました")});
@@ -250,7 +251,6 @@ function setup(){
   document.querySelector("#deckViewerClose").onclick=closeDeckViewer;
   document.addEventListener("click",e=>{const v=document.querySelector("#discardViewer");if(v&&!v.hidden&&!e.target.closest("#discardViewer .discard-viewer-panel")&&!e.target.closest(".player .other .zone:nth-child(2)"))closeDiscardViewer()});
   document.querySelector("#discardViewer").onclick=e=>{if(e.target===document.querySelector("#discardViewer"))closeDiscardViewer()};
-  document.querySelector("#inspectDeck").onclick=openDeckViewer;
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
   document.querySelector("#deckCardSearch").oninput=()=>renderDeckEditor();
   document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
