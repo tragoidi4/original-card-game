@@ -114,17 +114,8 @@ function selection(){
     add("カウンター +1",()=>{c.counters++;render()});
     add("カウンター -1",()=>{if(c.counters===0)return log("カウンター減少をキャンセル");c.counters--;render()});
   }
-  if(s.z==="hand"){
-    add("手札へ",()=>move("hand"));
-    add("モンスターへ",()=>move("monsters"));
-    add("エネルギーへ",()=>move("energy"));
-    add("フィールドへ",()=>move("field"));
-    add("罠へ",()=>move("facedown"));
-    add("捨て札へ",()=>move("discard"));
-  }else{
-    for(const[z,label]of[["hand","手札へ"],["energy","エネルギーへ"],["monsters","モンスターへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]])
-      if(z!==s.z)add(label,()=>move(z));
-  }
+  const destinations=[["deck","山札へ"],["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]];
+  for(const[z,label]of destinations)if(z!==s.z)add(label,()=>move(z));
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
 function openDeckViewer(){state.deckInspectId=null;renderDeckViewer();const v=document.querySelector("#deckViewerLog"),l=document.querySelector("#log");if(v&&l){v.innerHTML=l.innerHTML;v.scrollTop=v.scrollHeight}document.querySelector("#deckViewer").hidden=false}
@@ -184,6 +175,7 @@ function renderDeckEditor(){
   const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
   current.innerHTML="";candidates.innerHTML="";
   const deck=state.players[1].deckList||[];
+  const count=document.querySelector("#deckCurrentCount");if(count)count.textContent=deck.length+"枚";
   if(!deck.length){current.innerHTML='<div class="deck-empty">デッキにカードがありません</div>'}else{
     const counts=new Map();
     deck.forEach(n=>counts.set(n,(counts.get(n)||0)+1));
@@ -258,7 +250,7 @@ function setup(){
   document.querySelector("#rename").onclick=()=>{
     const n=document.querySelector("#name").value.trim();if(n){state.players[1].name=n.slice(0,16);render();log("名前を変更しました")}
   };
-  document.querySelector("#reset").onclick=()=>{if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;const deckList=(state.savedDeck||[]).slice();const p=newPlayer(n,"p1");const pool=deckList.length?deckList:p.deckList;p.deckList=pool.slice();p.hand=pool.slice(0,7).map((name,i)=>newCard(name,"p1h"+i));p.deck=pool.slice(7).map((name,i)=>newCard(name,"p1d"+i));state.players[1]=p;state.selected=null;render();log("自分の盤面をリセットし、現在のデッキを反映しました")}};
+  document.querySelector("#reset").onclick=()=>{if(confirm("自分の盤面をリセットしますか？")){const n=state.players[1].name;const deckList=(state.savedDeck||[]).slice();const p=newPlayer(n,"p1");const pool=shuffle((deckList.length?deckList:p.deckList).slice());p.deckList=pool.slice();p.hand=pool.slice(0,7).map((name,i)=>newCard(name,"p1h"+i));p.deck=pool.slice(7).map((name,i)=>newCard(name,"p1d"+i));state.players[1]=p;state.selected=null;render();log("自分の盤面をリセットし、デッキをシャッフルして7枚ドローしました")}};
 }
 async function start(){
   const r=await fetch(CARD_NAMES_URL);
