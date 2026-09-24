@@ -21,11 +21,9 @@ function openDiscardViewer(p=1){state.discardInspectPlayer=p;state.discardInspec
 function renderDiscardViewer(){
   const list=document.querySelector("#discardViewerList"),preview=document.querySelector("#discardViewerPreview"),actions=document.querySelector("#discardViewerActions");if(!list||!preview||!actions)return;
   const p=state.discardInspectPlayer||1,x=state.players[p],cards=x.discard||[];list.innerHTML="";preview.innerHTML="";actions.innerHTML="";
-  if(!cards.length){list.innerHTML='<div class="deck-viewer-empty">捨て札がありません</div>';preview.textContent="カードを選択";return}
-  cards.forEach(c=>{const e=document.createElement("div");e.className="discard-viewer-card"+(state.discardInspectId===c.id?" selected":"");const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(c.name))};e.appendChild(img);e.onclick=ev=>{ev.stopPropagation();state.discardInspectId=c.id;renderDiscardViewer()};list.appendChild(e)});
-  const c=cards.find(v=>v.id===state.discardInspectId);if(!c){preview.textContent="カードを選択";return}
-  const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.onerror=()=>{img.replaceWith(document.createTextNode(c.name))};preview.appendChild(img);const name=document.createElement("div");name.className="deck-viewer-name";name.textContent=c.name;preview.appendChild(name);
-  if(p===1)for(const[z,label]of [["deck","山札へ"],["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"]]){const btn=document.createElement("button");btn.textContent=label;btn.onclick=()=>moveInspectedDiscardCard(z);actions.appendChild(btn)}else actions.textContent="相手の捨て札は確認のみ";
+  if(!cards.length){list.innerHTML='<div class="deck-viewer-empty">捨て札がありません</div>';return}
+  cards.forEach(c=>{const e=document.createElement("div");e.className="discard-viewer-card"+(state.selected?.id===c.id?" selected":"");const img=document.createElement("img");img.src=imageUrl(c.name);img.alt=c.name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(c.name))};e.appendChild(img);e.onclick=ev=>{ev.stopPropagation();state.selected={p,z:"discard",id:c.id};render()};list.appendChild(e)});
+  preview.textContent="プレビューと操作は左側に表示";
 }
 function moveInspectedDiscardCard(dest){const x=state.players[state.discardInspectPlayer||1],i=x.discard.findIndex(c=>c.id===state.discardInspectId);if(i<0)return;if(MAX[dest]!==undefined&&x[dest].length>=MAX[dest])return log(dest+" の上限のため移動をキャンセル");const c=x.discard.splice(i,1)[0];c.faceUp=dest==="facedown"?false:true;x[dest].push(c);log("捨て札から "+c.name+" を "+({"deck":"山札","hand":"手札","monsters":"モンスター","energy":"エネルギー","field":"フィールド","facedown":"罠"}[dest])+" へ移動しました");state.discardInspectId=null;render();renderDiscardViewer()}
 function render(){
@@ -36,7 +34,7 @@ function render(){
     const deckCount=document.querySelector("#p"+p+"-deck-count");if(deckCount)deckCount.textContent=x.deck.length+"枚";
     zone(p,"field",x.field);
     zone(p,"discard",x.discard.slice(-1));
-    const discardZone=document.querySelector("#p"+p+"-discard");if(discardZone)discardZone.onclick=()=>openDiscardViewer(p);
+    const discardZone=document.querySelector("#p"+p+"-discard");if(discardZone){discardZone.onclick=()=>openDiscardViewer(p);Array.from(discardZone.children).forEach(card=>{card.onclick=ev=>{ev.stopPropagation();openDiscardViewer(p)}})}
     zone(p,"facedown",x.facedown);
     const deck=document.querySelector("#p"+p+"-deck");
     deck.innerHTML="";
