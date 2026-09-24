@@ -41,6 +41,7 @@ function render(){
     const deckCounterBadge=document.createElement("b");
     deckCounterBadge.id="p"+p+"-deck-counter";
     deckCounterBadge.textContent=x.deckCounters||0;
+    deckCounterBadge.hidden=!(x.deckCounters||0);
     deck.appendChild(deckCounterBadge);
     deck.onclick=null;
     if(x.deck.length){
