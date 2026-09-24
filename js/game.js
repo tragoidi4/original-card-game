@@ -11,7 +11,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function newCard(name,id){return{id,name,faceUp:true,tapped:false,counters:0,damage:0,recovery:0,modification:0};}
 function newPlayer(name,p){
   const pool=shuffle([...cardNames]).slice(0,50);
-  return{name,life:4000,deckList:pool.slice(),hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
+  return{name,life:4000,deckCounters:0,deckList:pool.slice(),hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
 }
 function log(s){const e=document.querySelector("#log"),d=new Date().toLocaleTimeString("ja-JP"),html='<div>['+d+'] '+esc(s)+"</div>";e.insertAdjacentHTML("beforeend",html);e.scrollTop=e.scrollHeight;const v=document.querySelector("#deckViewerLog");if(v){v.insertAdjacentHTML("beforeend",html);v.scrollTop=v.scrollHeight}}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -31,7 +31,7 @@ function render(){
     const x=state.players[p];
     document.querySelector("#p"+p+"-name").textContent=x.name;
     document.querySelector("#p"+p+"-life").textContent=x.life;
-    const deckCount=document.querySelector("#p"+p+"-deck-count");if(deckCount)deckCount.textContent=x.deck.length+"枚";
+    const deckCount=document.querySelector("#p"+p+"-deck-count");if(deckCount)deckCount.textContent=x.deck.length+"枚";const deckCounter=document.querySelector("#p"+p+"-deck-counter");if(deckCounter)deckCounter.textContent=x.deckCounters||0;
     zone(p,"field",x.field);
     zone(p,"discard",x.discard.slice(-1));
     const discardZone=document.querySelector("#p"+p+"-discard");if(discardZone){discardZone.onclick=()=>openDiscardViewer(p);Array.from(discardZone.children).forEach(card=>{card.onclick=ev=>{ev.stopPropagation();openDiscardViewer(p)}})}
@@ -91,6 +91,7 @@ function selection(){
     add("1枚引く",()=>drawCards(1));
     add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
     add("山札をシャッフル",()=>{shuffle(state.players[1].deck);state.selected=null;render();log("山札をシャッフルしました")});
+    addCounterControls(op,state.players[1],"deckCounters");
     add("山札を横向きにする",()=>{state.players[1].deckHorizontal=!state.players[1].deckHorizontal;state.selected=null;render()});
     return;
   }
@@ -119,17 +120,16 @@ function selection(){
   if(s.z==="monsters"){
     add("100ダメージ",()=>{c.damage+=100;render()});
     add("100回復",()=>{c.recovery=Math.min(c.damage,c.recovery+100);render()});
-    add("カウンター +1",()=>{c.counters++;render()});
-    add("カウンター -1",()=>{if(c.counters===0)return log("カウンター減少をキャンセル");c.counters--;render()});
+    addCounterControls(op,c,"counters");
   }
   if(s.z==="field"){
-    add("カウンター +1",()=>{c.counters++;render()});
-    add("カウンター -1",()=>{if(c.counters===0)return log("カウンター減少をキャンセル");c.counters--;render()});
+    addCounterControls(op,c,"counters");
   }
   const destinations=[["deck","山札へ"],["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]];
   for(const[z,label]of destinations)if(z!==s.z)add(label,()=>move(z));
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
+function addCounterControls(parent,target,key){const row=document.createElement("div");row.className="counter-actions";const plus=document.createElement("button");plus.textContent="カウンター +1";plus.onclick=()=>{target[key]=(target[key]||0)+1;render()};const minus=document.createElement("button");minus.textContent="カウンター -1";minus.onclick=()=>{if((target[key]||0)===0)return log("カウンター減少をキャンセル");target[key]--;render()};row.append(plus,minus);parent.appendChild(row)}
 function openDeckViewer(){state.deckInspectId=null;renderDeckViewer();const v=document.querySelector("#deckViewerLog"),l=document.querySelector("#log");if(v&&l){v.innerHTML=l.innerHTML;v.scrollTop=v.scrollHeight}document.querySelector("#deckViewer").hidden=false}
 function closeDeckViewer(){state.deckInspectId=null;document.querySelector("#deckViewer").hidden=true}
 function renderDeckViewer(){
