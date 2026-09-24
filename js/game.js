@@ -245,7 +245,9 @@ function readDeckCode(code){
   return deck;
 }
 function setup(){
-  document.querySelector("#deckViewerClose").onclick=closeDeckViewer;\n  document.querySelector("#discardViewerClose").onclick=closeDiscardViewer;document.addEventListener("click",e=>{const v=document.querySelector("#discardViewer");if(v&&!v.hidden&&!e.target.closest("#discardViewer .discard-viewer-panel"))closeDiscardViewer()});\n  document.querySelector("#discardViewer").onclick=e=>{if(e.target===document.querySelector("#discardViewer"))closeDiscardViewer()};
+  document.querySelector("#deckViewerClose").onclick=closeDeckViewer;
+  document.querySelector("#discardViewerClose").onclick=closeDiscardViewer;document.addEventListener("click",e=>{const v=document.querySelector("#discardViewer");if(v&&!v.hidden&&!e.target.closest("#discardViewer .discard-viewer-panel"))closeDiscardViewer()});
+  document.querySelector("#discardViewer").onclick=e=>{if(e.target===document.querySelector("#discardViewer"))closeDiscardViewer()};
   document.querySelector("#inspectDeck").onclick=openDeckViewer;
   document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
   document.querySelector("#deckCardSearch").oninput=()=>renderDeckEditor();
