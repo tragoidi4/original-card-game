@@ -36,7 +36,7 @@ function render(){
     const deckCount=document.querySelector("#p"+p+"-deck-count");if(deckCount)deckCount.textContent=x.deck.length+"枚";
     zone(p,"field",x.field);
     zone(p,"discard",x.discard.slice(-1));
-    const discardZone=document.querySelector("#p"+p+"-discard");if(discardZone)discardZone.parentElement.onclick=()=>openDiscardViewer(p);
+    const discardZone=document.querySelector("#p"+p+"-discard");if(discardZone){const discardArea=discardZone.parentElement;discardArea.onclick=()=>openDiscardViewer(p);let discardButton=discardArea.querySelector(".discard-open-button");if(!discardButton){discardButton=document.createElement("button");discardButton.className="discard-open-button";discardButton.textContent="捨て札を確認";discardButton.onclick=e=>{e.stopPropagation();openDiscardViewer(p)};discardArea.appendChild(discardButton)}}
     zone(p,"facedown",x.facedown);
     const deck=document.querySelector("#p"+p+"-deck");
     deck.innerHTML="";
