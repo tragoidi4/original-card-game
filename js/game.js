@@ -38,6 +38,10 @@ function render(){
     zone(p,"facedown",x.facedown);
     const deck=document.querySelector("#p"+p+"-deck");
     deck.innerHTML="";
+    const deckCounterBadge=document.createElement("b");
+    deckCounterBadge.id="p"+p+"-deck-counter";
+    deckCounterBadge.textContent=x.deckCounters||0;
+    deck.appendChild(deckCounterBadge);
     deck.onclick=null;
     if(x.deck.length){
       deck.onclick=()=>{state.selected={p,z:"deck",id:"deck"};render()};
