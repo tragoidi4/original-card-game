@@ -21,6 +21,7 @@ function render(){
     const x=state.players[p];
     document.querySelector("#p"+p+"-name").textContent=x.name;
     document.querySelector("#p"+p+"-life").textContent=x.life;
+    const deckCount=document.querySelector("#p"+p+"-deck-count");if(deckCount)deckCount.textContent=x.deck.length+"枚";
     zone(p,"field",x.field);
     zone(p,"discard",x.discard.slice(-1));
     zone(p,"facedown",x.facedown);
@@ -72,14 +73,14 @@ function selection(){
   if(!state.selected){pr.innerHTML="カードを選択";op.textContent="カードを選択してください";return}
   const s=state.selected;
   if(s.z==="deck"){
-    pr.textContent="デッキ";
+    pr.textContent="山札";
     op.innerHTML="";
     if(s.p!==1){op.textContent="相手のデッキは確認のみ";return}
     add("山札を確認",()=>openDeckViewer());
     add("1枚引く",()=>drawCards(1));
     add("好きな枚数を引く",()=>{const n=Number(prompt("引く枚数を入力してください"));if(Number.isInteger(n)&&n>0)drawCards(n)});
-    add("デッキをシャッフル",()=>{shuffle(state.players[1].deck);render();log("デッキをシャッフルしました")});
-    add("デッキを横向きにする",()=>{state.players[1].deckHorizontal=!state.players[1].deckHorizontal;state.selected=null;render()});
+    add("山札をシャッフル",()=>{shuffle(state.players[1].deck);state.selected=null;render();log("山札をシャッフルしました")});
+    add("山札を横向きにする",()=>{state.players[1].deckHorizontal=!state.players[1].deckHorizontal;state.selected=null;render()});
     return;
   }
   const c=find(s.p,s.z,s.id);
@@ -158,7 +159,7 @@ function move(dest){
 function drawCards(n){
   const x=state.players[1];
   if(x.hand.length+n>MAX.hand)return log("手札の上限のためドローをキャンセル");
-  if(x.deck.length<n)return log("デッキが足りないためドローをキャンセル");
+  if(x.deck.length<n)return log("山札が足りないためドローをキャンセル");
   for(let i=0;i<n;i++)x.hand.push(x.deck.shift());
   state.selected=null;render();
 }
