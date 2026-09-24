@@ -58,3 +58,5 @@
 .discard-viewer-preview{min-height:170px;text-align:center;color:#aaa;overflow:auto}
 .discard-viewer-preview img{width:120px;max-height:165px;object-fit:contain;display:block;margin:5px auto}
 .discard-viewer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+
+.player .other .zone:nth-child(2){cursor:pointer}.player .other .zone:nth-child(2):hover{border-color:#777;color:#ccc}
