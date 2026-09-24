@@ -60,3 +60,4 @@
 .discard-viewer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
 
 .player .other .zone:nth-child(2){cursor:pointer}.player .other .zone:nth-child(2):hover{border-color:#777;color:#ccc}
+\n.counter-actions{display:flex!important;gap:4px;width:100%;}.counter-actions button{flex:1;min-width:0;}#p1-deck,#p2-deck{position:relative;}#p1-deck-counter,#p2-deck-counter{position:absolute;right:3px;top:3px;min-width:18px;padding:1px 4px;border-radius:10px;background:#222;color:#fff;font-size:11px;text-align:center;}
