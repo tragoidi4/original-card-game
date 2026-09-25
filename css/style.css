@@ -62,3 +62,4 @@
 
 .player .other .zone:nth-child(2){cursor:pointer}.player .other .zone:nth-child(2):hover{border-color:#777;color:#ccc}
 .counter-actions{display:flex!important;gap:4px;width:100%;}.counter-actions button{flex:1;min-width:0;}#p1-deck,#p2-deck{position:relative;}#p1-deck-counter,#p2-deck-counter{position:absolute;left:3px;top:3px;right:auto;min-width:24px;padding:2px 5px;border-radius:10px;background:#222;color:#fff;font-size:14px;line-height:1.1;font-weight:700;text-align:center;z-index:4;}
+#ops{max-height:calc(52% - 30px);overflow-y:auto;overflow-x:hidden;padding-right:3px}
