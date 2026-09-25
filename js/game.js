@@ -131,9 +131,9 @@ function selection(){
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
   if(s.z==="hand"){
     if(c.revealed){
-      add("公開をやめる",()=>{c.revealed=false;state.selected=null;render()});
+      add("公開をやめる",()=>{c.revealed=false;state.selected={p:s.p,z:s.z,id:s.id};render()});
     }else{
-      add("相手に公開する",()=>{c.revealed=true;c.faceUp=true;state.selected=null;render()});
+      add("相手に公開する",()=>{c.revealed=true;c.faceUp=true;state.selected={p:s.p,z:s.z,id:s.id};render()});
     }
   }
   if(s.z==="monsters"||s.z==="energy"){add("タップ / アンタップ",()=>{c.tapped=!c.tapped;state.selected={p:s.p,z:s.z,id:s.id};render()});}
