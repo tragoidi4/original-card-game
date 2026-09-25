@@ -290,7 +290,7 @@ function setup(){
       log("デッキコードからデッキを複製しました")}catch(e){alert(e.message)}};
   document.querySelector("#deckClearAll").onclick=()=>{const deck=state.players[1].deckList||[];if(!deck.length)return;if(!confirm("現在のデッキのカードをすべて除きますか？"))return;state.players[1].deckList=[];renderDeckEditor();log("デッキのカードをすべて除きました")};
   document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();const b=document.querySelector("#deckSave");b.textContent="保存しました";b.classList.add("saved");clearTimeout(state.deckSaveTimer);state.deckSaveTimer=setTimeout(()=>{b.textContent="デッキを保存";b.classList.remove("saved")},1200);log("デッキを保存しました")};
-  document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
+  document.querySelector("#deckEditBack").onclick=()=>{const current=state.players[1].deckList||[];const saved=state.savedDeck||[];const same=current.length===saved.length&&current.every((name,i)=>name===saved[i]);if(!same&&!confirm("デッキの内容が保存されていません。保存せずに対戦画面へ戻りますか？"))return;document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
   document.querySelectorAll("[data-first]").forEach(b=>b.onclick=()=>{
     const q=b.dataset.first;state.turnPlayer=q==="self"?1:q==="opponent"?2:(Math.random()<.5?1:2);
