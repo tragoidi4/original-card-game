@@ -42,7 +42,7 @@
 
 .deck-viewer-log-title{margin-top:12px;padding-top:8px;border-top:1px solid #383d45;font-size:11px;color:#aaa}.deck-viewer-log{height:180px;margin-top:6px;padding:6px;background:#111318;border:1px solid #383d45;border-radius:4px;overflow:auto;font-size:10px;line-height:1.5;color:#ccc}.deck-viewer-log>div{margin-bottom:3px}
 
-.deck-current-title{display:flex;align-items:center;justify-content:space-between}.deck-current-title b{font-size:11px;color:#fff}
+.deck-current-title{display:flex;align-items:center;justify-content:space-between}.deck-current-title b{font-size:11px;color:#fff}.deck-current-title-actions{display:flex;align-items:center;gap:6px}.deck-current-title-actions button{padding:4px 7px;border:1px solid #555;border-radius:4px;background:#292d34;color:#fff;cursor:pointer;font-size:11px}
 
 .deck-zone>span{display:block;text-align:center;color:#aaa}.deck-zone>span b{color:#fff;font-size:11px;margin-left:3px}.deck-zone>div[id$="-deck"]{margin:4px auto}
 
