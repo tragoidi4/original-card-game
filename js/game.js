@@ -189,7 +189,9 @@ function endTurn(){
   x2.monsters.forEach(m=>m.tapped=false);x2.energy.forEach(e=>e.tapped=false);
   render();log(x2.name+" のターン開始");
 }
-function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);e.onclick=()=>{const deck=state.players[1].deckList||[];deck.push(name);state.players[1].deckList=deck;state.players[1].deckList.sort((a,b)=>cardNames.indexOf(a)-cardNames.indexOf(b));renderDeckEditor()};return e}
+function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);e.onclick=()=>{const deck=state.players[1].deckList||[];deck.push(name);state.players[1].deckList=deck;state.players[1].deckList.sort((a,b)=>cardNames.indexOf(a)-cardNames.indexOf(b));renderDeckEditor()};e.onclick=()=>showDeckEditorPreview(name);
+  return e}
+function showDeckEditorPreview(name){const preview=document.querySelector("#deckEditorPreview");if(!preview)return;preview.innerHTML="";const img=document.createElement("img");img.src=CARD_IMAGE_BASE+encodeURIComponent(name)+".png";img.alt=name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(name))};preview.appendChild(img);const label=document.createElement("div");label.textContent=name;preview.appendChild(label)}
 function renderDeckEditor(){
   const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
   current.innerHTML="";candidates.innerHTML="";
@@ -202,6 +204,7 @@ function renderDeckEditor(){
     orderedNames.forEach(name=>{const count=counts.get(name);
       const row=document.createElement("div");
       row.className="deck-card-count";
+      row.onclick=()=>showDeckEditorPreview(name);
       const nameEl=document.createElement("span");nameEl.textContent=name;const controls=document.createElement("span");controls.className="deck-count-controls";const minus=document.createElement("button");minus.type="button";minus.textContent="−";const countEl=document.createElement("span");countEl.textContent=count;countEl.className="deck-count-number"+(count>4?" over-limit":"");const plus=document.createElement("button");plus.type="button";plus.textContent="+";minus.onclick=e=>{e.stopPropagation();const i=state.players[1].deckList.indexOf(name);if(i>=0)state.players[1].deckList.splice(i,1);renderDeckEditor()};plus.onclick=e=>{e.stopPropagation();state.players[1].deckList.push(name);renderDeckEditor()};controls.append(minus,countEl,plus);row.append(nameEl,controls);
       current.appendChild(row);
     });
