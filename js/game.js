@@ -147,6 +147,7 @@ function selection(){
   }
   const destinations=[["deck","山札へ"],["hand","手札へ"],["monsters","モンスターへ"],["energy","エネルギーへ"],["field","フィールドへ"],["facedown","罠へ"],["discard","捨て札へ"]];
   if(s.z==="field")destinations.splice(2,4);
+  if(s.z==="facedown")destinations.splice(2,3);
   for(const[z,label]of destinations)if(z!==s.z&&!(s.z==="monsters"&&z==="facedown"))add(label,()=>move(z));
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
