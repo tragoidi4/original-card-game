@@ -3,7 +3,7 @@ const CARD_NAMES_URL="https://raw.githubusercontent.com/Omezi42/AnokoroImageFold
 const CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/captured_cards/";
 const CROPPED_CARD_IMAGE_BASE="https://raw.githubusercontent.com/Omezi42/AnokoroImageFolder/main/images/cropped_cards/";
 
-const state={turnPlayer:1,selected:null,deckInspectId:null,discardInspectId:null,discardInspectPlayer:1,players:{},savedDeck:[],deckSaveTimer:null,deckLoadTimer:null};
+const state={turnPlayer:1,selected:null,deckInspectId:null,discardInspectId:null,discardInspectPlayer:1,players:{},savedDeck:[],deckSaveTimer:null,deckLoadTimer:null,deckOrder:[]};
 let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
@@ -189,7 +189,7 @@ function endTurn(){
   x2.monsters.forEach(m=>m.tapped=false);x2.energy.forEach(e=>e.tapped=false);
   render();log(x2.name+" のターン開始");
 }
-function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);e.onclick=()=>{const deck=state.players[1].deckList||[];deck.push(name);state.players[1].deckList=deck;renderDeckEditor()};return e}
+function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);e.onclick=()=>{const deck=state.players[1].deckList||[];deck.push(name);state.players[1].deckList=deck;if(!state.deckOrder.includes(name))state.deckOrder.push(name);renderDeckEditor()};return e}
 function renderDeckEditor(){
   const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
   current.innerHTML="";candidates.innerHTML="";
@@ -198,7 +198,10 @@ function renderDeckEditor(){
   if(!deck.length){current.innerHTML='<div class="deck-empty">デッキにカードがありません</div>'}else{
     const counts=new Map();
     deck.forEach(n=>counts.set(n,(counts.get(n)||0)+1));
-    counts.forEach((count,name)=>{
+    const orderedNames=[];
+    state.deckOrder.forEach(name=>{if(counts.has(name))orderedNames.push(name)});
+    counts.forEach((count,name)=>{if(!state.deckOrder.includes(name))orderedNames.push(name)});
+    orderedNames.forEach(name=>{const count=counts.get(name);
       const row=document.createElement("div");
       row.className="deck-card-count";
       const nameEl=document.createElement("span");nameEl.textContent=name;const controls=document.createElement("span");controls.className="deck-count-controls";const minus=document.createElement("button");minus.type="button";minus.textContent="−";const countEl=document.createElement("span");countEl.textContent=count;countEl.className="deck-count-number"+(count>4?" over-limit":"");const plus=document.createElement("button");plus.type="button";plus.textContent="+";minus.onclick=e=>{e.stopPropagation();const i=state.players[1].deckList.indexOf(name);if(i>=0)state.players[1].deckList.splice(i,1);renderDeckEditor()};plus.onclick=e=>{e.stopPropagation();state.players[1].deckList.push(name);renderDeckEditor()};controls.append(minus,countEl,plus);row.append(nameEl,controls);
@@ -253,12 +256,13 @@ function setup(){
   document.querySelector("#deckViewerClose").onclick=closeDeckViewer;
   document.addEventListener("click",e=>{const v=document.querySelector("#discardViewer");if(v&&!v.hidden&&!e.target.closest("#discardViewer .discard-viewer-panel")&&!e.target.closest(".player .other .zone:nth-child(2)"))closeDiscardViewer()});
   document.querySelector("#discardViewer").onclick=e=>{if(e.target===document.querySelector("#discardViewer"))closeDiscardViewer()};
-  document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
+  document.querySelector("#deckEdit").onclick=()=>{state.players[1].deckList=state.savedDeck.slice();state.deckOrder=[...new Set(state.players[1].deckList)];document.querySelector("#deckEditor").hidden=false;const search=document.querySelector("#deckCardSearch");if(search)search.value="";renderDeckEditor()};
   document.querySelector("#deckCardSearch").oninput=()=>renderDeckEditor();
   document.querySelector("#deckCodeCreate").onclick=()=>{const input=document.querySelector("#deckCodeInput");input.value=makeDeckCode(state.players[1].deckList||[]);input.focus();input.select();log("デッキコードを発行しました")};
-  document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;renderDeckEditor();
+  document.querySelector("#deckCodeLoad").onclick=()=>{try{const deck=readDeckCode(document.querySelector("#deckCodeInput").value);state.players[1].deckList=deck;state.deckOrder=[...new Set(deck)];renderDeckEditor();
       const b=document.querySelector("#deckCodeLoad");b.textContent="複製しました";b.classList.add("loaded");clearTimeout(state.deckLoadTimer);state.deckLoadTimer=setTimeout(()=>{b.textContent="コードから複製";b.classList.remove("loaded")},1200);
       log("デッキコードからデッキを複製しました")}catch(e){alert(e.message)}};
+  document.querySelector("#deckClearAll").onclick=()=>{const deck=state.players[1].deckList||[];if(!deck.length)return;if(!confirm("現在のデッキのカードをすべて除きますか？"))return;state.players[1].deckList=[];renderDeckEditor();log("デッキのカードをすべて除きました")};
   document.querySelector("#deckSave").onclick=()=>{state.savedDeck=(state.players[1].deckList||[]).slice();const b=document.querySelector("#deckSave");b.textContent="保存しました";b.classList.add("saved");clearTimeout(state.deckSaveTimer);state.deckSaveTimer=setTimeout(()=>{b.textContent="デッキを保存";b.classList.remove("saved")},1200);log("デッキを保存しました")};
   document.querySelector("#deckEditBack").onclick=()=>{document.querySelector("#deckEditor").hidden=true};
   document.querySelectorAll("[data-end]").forEach(b=>b.onclick=endTurn);
