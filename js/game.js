@@ -120,7 +120,7 @@ function selection(){
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
   if(c.faceUp===false){
     add("表向きにする",()=>{c.faceUp=true;render()});
-  }else{
+  }else if(s.z!=="monsters"){
     add("裏向きにする",()=>{c.faceUp=false;state.selected=null;render()});
   }
   if(s.z==="monsters"||s.z==="energy"){add("タップ / アンタップ",()=>{c.tapped=!c.tapped;state.selected={p:s.p,z:s.z,id:s.id};render()});}
