@@ -54,6 +54,11 @@ function render(){
     const h=document.querySelector("#p"+p+"-hand");h.innerHTML="";
     x.hand.forEach(c=>h.appendChild(cardEl(p,"hand",c,p===1||c.revealed)));
   }
+  const revealedStatus=document.querySelector("#revealedStatus");
+  if(revealedStatus){
+    const revealed=state.players[1].hand.filter(c=>c.revealed);
+    revealedStatus.textContent=revealed.length?`公開中：${revealed.length}枚`:"公開中の手札はありません";
+  }
   document.querySelector("#turnPlayer").textContent=state.players[state.turnPlayer].name;
   selection();
 }
@@ -121,7 +126,7 @@ function selection(){
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
   if(s.z==="hand"){
     if(c.revealed){
-      add("公開をやめる",()=>{c.revealed=false;c.faceUp=false;state.selected=null;render()});
+      add("公開をやめる",()=>{c.revealed=false;state.selected=null;render()});
     }else{
       add("相手に公開する",()=>{c.revealed=true;c.faceUp=true;state.selected=null;render()});
     }
