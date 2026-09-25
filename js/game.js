@@ -191,7 +191,32 @@ function endTurn(){
 }
 function deckEditorCard(name){const e=document.createElement("div");e.className="deck-card";const img=document.createElement("img");img.src=imageUrl(name);img.alt=name;img.loading="lazy";img.onerror=()=>{img.remove()};e.appendChild(img);const n=document.createElement("div");n.className="deck-card-name";n.textContent=name;e.appendChild(n);e.onclick=()=>{const deck=state.players[1].deckList||[];deck.push(name);state.players[1].deckList=deck;state.players[1].deckList.sort((a,b)=>cardNames.indexOf(a)-cardNames.indexOf(b));renderDeckEditor()};e.onclick=()=>showDeckEditorPreview(name);
   return e}
-function showDeckEditorPreview(name){const preview=document.querySelector("#deckEditorPreview");if(!preview)return;preview.innerHTML="";const img=document.createElement("img");img.src=CARD_IMAGE_BASE+encodeURIComponent(name)+".png";img.alt=name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(name))};preview.appendChild(img);const label=document.createElement("div");label.textContent=name;preview.appendChild(label)}
+function showDeckEditorPreview(name){
+  const preview=document.querySelector("#deckEditorPreview");if(!preview)return;
+  preview.innerHTML="";
+  const img=document.createElement("img");img.src=CARD_IMAGE_BASE+encodeURIComponent(name)+".png";img.alt=name;img.loading="lazy";img.onerror=()=>{img.replaceWith(document.createTextNode(name))};preview.appendChild(img);
+  const label=document.createElement("div");label.textContent=name;preview.appendChild(label);
+  const controls=document.createElement("div");controls.className="deck-preview-controls";
+  const plus=document.createElement("button");plus.type="button";plus.textContent="+1枚";plus.onclick=()=>addDeckEditorCards(name,1);
+  const minus=document.createElement("button");minus.type="button";minus.textContent="−1枚";minus.onclick=()=>addDeckEditorCards(name,-1);
+  const custom=document.createElement("button");custom.type="button";custom.textContent="指定した枚数を追加";custom.onclick=()=>{
+    const input=prompt("追加する枚数を入力してください", "1");if(input===null)return;
+    const n=Number(input.trim());if(!Number.isInteger(n)||n<=0){alert("1以上の整数を入力してください");return}
+    addDeckEditorCards(name,n)
+  };
+  controls.append(plus,minus,custom);preview.appendChild(controls)
+}
+function addDeckEditorCards(name,delta){
+  const deck=state.players[1].deckList||[];
+  if(delta<0){
+    for(let i=0;i<Math.abs(delta);i++){const index=deck.indexOf(name);if(index<0)break;deck.splice(index,1)}
+  }else{
+    for(let i=0;i<delta;i++)deck.push(name)
+  }
+  deck.sort((a,b)=>cardNames.indexOf(a)-cardNames.indexOf(b));
+  state.players[1].deckList=deck;
+  renderDeckEditor()
+}
 function renderDeckEditor(){
   const current=document.querySelector("#deckCurrentList"),candidates=document.querySelector("#deckCandidateList");if(!current||!candidates)return;
   current.innerHTML="";candidates.innerHTML="";
