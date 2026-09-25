@@ -8,7 +8,7 @@ let cardNames=[];
 
 function imageUrl(name){return CARD_IMAGE_BASE+encodeURIComponent(name)+".png";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
-function newCard(name,id){return{id,name,faceUp:true,tapped:false,counters:0,damage:0,recovery:0,modification:0};}
+function newCard(name,id){return{id,name,faceUp:true,revealed:false,tapped:false,counters:0,damage:0,recovery:0,modification:0};}
 function newPlayer(name,p){
   const pool=shuffle([...cardNames]).slice(0,50);
   return{name,life:4000,deckCounters:0,deckList:pool.slice(),hand:pool.slice(0,7).map((n,i)=>newCard(n,p+"h"+i)),monsters:[],energy:[],field:[],discard:[],facedown:[],deck:pool.slice(7).map((n,i)=>newCard(n,p+"d"+i))};
@@ -52,7 +52,7 @@ function render(){
     zone(p,"energy",x.energy);
     zone(p,"monsters",x.monsters);
     const h=document.querySelector("#p"+p+"-hand");h.innerHTML="";
-    x.hand.forEach(c=>h.appendChild(cardEl(p,"hand",c,p===1)));
+    x.hand.forEach(c=>h.appendChild(cardEl(p,"hand",c,p===1||c.revealed)));
   }
   document.querySelector("#turnPlayer").textContent=state.players[state.turnPlayer].name;
   selection();
@@ -76,6 +76,7 @@ function cardEl(p,z,c,visible){
     if(a)e.insertAdjacentHTML("beforeend",'<span class="adjust">'+(a>0?"+":"")+a+"</span>");
     if(c.counters)e.insertAdjacentHTML("beforeend",'<span class="counter">'+c.counters+"</span>");
   }
+  if(c.revealed){const mark=document.createElement("span");mark.className="revealed-marker";mark.textContent="!";e.appendChild(mark)}
   e.dataset.player=String(p);e.dataset.zone=z;e.dataset.cardId=c.id;
   if(p===1)e.onclick=()=>select(p,z,c.id);
   return e;
@@ -119,7 +120,11 @@ function selection(){
   op.innerHTML="";
   if(s.p!==1){op.textContent="相手のカードは確認のみ";return}
   if(s.z==="hand"){
-    add("相手に公開する",()=>{c.faceUp=true;state.selected=null;render()});
+    if(c.revealed){
+      add("公開をやめる",()=>{c.revealed=false;c.faceUp=false;state.selected=null;render()});
+    }else{
+      add("相手に公開する",()=>{c.revealed=true;c.faceUp=true;state.selected=null;render()});
+    }
   }
   if(s.z==="monsters"||s.z==="energy"){add("タップ / アンタップ",()=>{c.tapped=!c.tapped;state.selected={p:s.p,z:s.z,id:s.id};render()});}
   if(s.z==="monsters"){
