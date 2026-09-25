@@ -137,6 +137,7 @@ function selection(){
     }
   }
   if(s.z==="monsters"||s.z==="energy"){add("タップ / アンタップ",()=>{c.tapped=!c.tapped;state.selected={p:s.p,z:s.z,id:s.id};render()});}
+  if(s.z==="energy"){const energySpacer=document.createElement("div");energySpacer.style.height="12px";document.querySelector("#ops").appendChild(energySpacer);}
   if(s.z==="monsters"){
     add("100ダメージ",()=>{c.damage+=100;render()});
     add("100回復",()=>{c.recovery=Math.min(c.damage,c.recovery+100);render()});
@@ -149,6 +150,7 @@ function selection(){
   if(s.z==="field")destinations.splice(2,4);
   if(s.z==="facedown")destinations.splice(2,3);
   if(s.z==="energy")destinations.splice(2,4);
+  if(s.z==="monsters")destinations.splice(3,2);
   for(const[z,label]of destinations)if(z!==s.z&&!(s.z==="monsters"&&z==="facedown"))add(label,()=>move(z));
 }
 function add(t,fn){const b=document.createElement("button");b.textContent=t;b.onclick=fn;document.querySelector("#ops").appendChild(b)}
