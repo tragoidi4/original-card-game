@@ -77,6 +77,7 @@ function cardEl(p,z,c,visible){
     if(c.counters)e.insertAdjacentHTML("beforeend",'<span class="counter">'+c.counters+"</span>");
   }
   if(p===1)e.onclick=()=>select(p,z,c.id);
+  if(p===1&&(z==="monsters"||z==="energy"))e.oncontextmenu=ev=>{ev.preventDefault();c.tapped=!c.tapped;state.selected={p,z,id:c.id};render()};
   return e;
 }
 function find(p,z,id){return state.players[p][z].find(c=>c.id===id);}
