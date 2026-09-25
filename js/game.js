@@ -56,8 +56,13 @@ function render(){
   }
   const revealedStatus=document.querySelector("#revealedStatus");
   if(revealedStatus){
-    const revealed=state.players[1].hand.filter(c=>c.revealed);
-    revealedStatus.textContent=revealed.length?`公開中：${revealed.length}枚`:"公開中の手札はありません";
+    let statusText="カードを選択してください";
+    const selected=state.selected;
+    if(selected&&selected.p===1&&selected.z==="hand"){
+      const selectedCard=state.players[1].hand.find(v=>v.id===selected.id);
+      if(selectedCard)statusText=selectedCard.revealed?"公開中":"非公開";
+    }
+    revealedStatus.textContent=statusText;
   }
   document.querySelector("#turnPlayer").textContent=state.players[state.turnPlayer].name;
   selection();
